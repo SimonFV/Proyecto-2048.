@@ -66,3 +66,36 @@ def suma(x,i,j,a,b,c,d,p,y,z,h):
                 return suma(x,0,3,a,b,c,d,p,y,z+1,h)
         else:
             return x
+        
+#Decimal a cualquier base: x=int, b=base(2,8,16)
+def dec_hex(x,b):
+    if(x>b-1):
+        if(x%b==10):
+            return dec_hex(x//b,b) + "A"
+        elif(x%b==11):
+            return dec_hex(x//b,b) + "B"
+        elif(x%b==12):
+            return dec_hex(x//b,b) + "C"
+        elif(x%b==13):
+            return dec_hex(x//b,b) + "D"
+        elif(x%b==14):
+            return dec_hex(x//b,b) + "E"
+        elif(x%b==15):
+            return dec_hex(x//b,b) + "F"
+        else:
+            return dec_hex(x//b,b) + str(x%b)
+    else:
+        if(x%b==10):
+            return "A"
+        elif(x%b==11):
+            return "B"
+        elif(x%b==12):
+            return "C"
+        elif(x%b==13):
+            return "D"
+        elif(x%b==14):
+            return "E"
+        elif(x%b==15):
+            return "F"
+        else:
+            return str(x%b)
