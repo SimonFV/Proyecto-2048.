@@ -2,7 +2,6 @@
 #Simon Fallas Villalobos
 
 #Matriz inicial del juego y la funcion random para generar sus 2 numeros iniciales.
-
 import random
 
 def gam():
@@ -26,3 +25,44 @@ def ran1(a,b,m):
         return ran1(a,b,m)
     else:
         return [a2,b2]
+
+#Suma: h==0, Multiplicacion: h!=0
+#Up: x, i=0, j=0, a=1, b=0, c=1, d=0, p=2, y=0, z=0
+#Down: x, i=3, j=0, a=-1, b=0, c=1, d=0, p=1, y=0, z=0
+#Left: x, i=0, j=0, a=0, b=1, c=0, d=1, p=2, y=1, z=0 
+#Right: x, i=0, j=3, a=0, b=-1, c=0, d=1, p=1, y=1, z=0
+def suma(x,i,j,a,b,c,d,p,y,z,h):
+    if(4>=j+1 and 4>=i+1):
+        if(x[i][j]==0 and z!=2):
+            x[i][j]=x[i+a][j+b]
+            x[i+a][j+b]=0
+            return suma(x,i+d,j+c,a,b,c,d,p,y,z,h)
+        elif(x[i][j]==x[i+a][j+b] and z==2):
+            if(h==0):
+                x[i][j]=x[i][j]+x[i][j]
+            else:
+                x[i][j]=x[i][j]*x[i][j]
+            x[i+a][j+b]=0
+            return suma(x,i+d,j+c,a,b,c,d,p,y,z,h)
+        else:
+            return suma(x,i+d,j+c,a,b,c,d,p,y,z,h)
+    elif(y==0):
+        if(p!=i):
+            return suma(x,i+a,0,a,b,c,d,p,y,z,h)
+        elif(z<7):
+            if(p==2):
+                return suma(x,0,0,a,b,c,d,p,y,z+1,h)
+            else:
+                return suma(x,3,0,a,b,c,d,p,y,z+1,h)
+        else:
+            return x
+    else:
+        if(p!=j):
+            return suma(x,0,j+b,a,b,c,d,p,y,z,h)
+        elif(z<3):
+            if(p==2):
+                return suma(x,0,0,a,b,c,d,p,y,z+1,h)
+            else:
+                return suma(x,0,3,a,b,c,d,p,y,z+1,h)
+        else:
+            return x
