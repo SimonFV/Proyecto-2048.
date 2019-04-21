@@ -1,9 +1,10 @@
 #Proyecto Juego 2048
 #Simon Fallas Villalobos
 
-#Matriz inicial del juego y la funcion random para generar sus 2 numeros iniciales.
+
 import random
 
+#Matriz inicial del juego y la funcion random para generar sus 2 numeros iniciales.
 def gam():
     x=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     m=[0,1,2,3]
@@ -15,9 +16,11 @@ def gam():
     
     print("",x[0],"\n",x[1],"\n",x[2],"\n",x[3])
 
+#Función que escoje un valor aleatorio de una lista.
 def ran(m):
     y=random.choice(m)
     return y
+#Funcion que se asegura que no se repitan las casillas de la matriz inicial.
 def ran1(a,b,m):
     a2=ran(m)
     b2=ran(m)
@@ -26,6 +29,7 @@ def ran1(a,b,m):
     else:
         return [a2,b2]
 
+#Función encargada de mover las casillas de la matriz según los parámetros ingresados.
 #Suma: h==0, Multiplicacion: h!=0
 #Up: x, i=0, j=0, a=1, b=0, c=1, d=0, p=2, y=0, z=0
 #Down: x, i=3, j=0, a=-1, b=0, c=1, d=0, p=1, y=0, z=0
@@ -67,7 +71,8 @@ def suma(x,i,j,a,b,c,d,p,y,z,h):
         else:
             return x
         
-#Decimal a cualquier base: x=int, b=base(2,8,16)
+#Funcion que convierte de decimal a base binaria, octal o hexadecimal     
+# x=int, b=base(2,8,16)
 def dec_hex(x,b):
     if(x>b-1):
         if(x%b==10):
