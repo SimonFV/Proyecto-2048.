@@ -1,15 +1,18 @@
+from tkinter import Tk
 from tkinter import *
 from tkinter import ttk, font
+import random
 #Borders: "flat", "raised", "sunken", "ridge", "solid", "groove"
 
-class Aplicacion():
-    def __init__(self):
-        
-        self.ve = Tk()
+class App():
+    def __init__(self, master):
+
+        self.ve = master
         self.ve.geometry('520x460')
         self.ve.configure(bg = 'grey')
         self.ve.title('2048!!')
 
+        x=gam()
         
         self.gr = ttk.Frame(self.ve, padding=(5,5))
         self.gr2 = ttk.Frame(self.ve, padding=(5,5))
@@ -40,22 +43,22 @@ class Aplicacion():
         self.name=Entry(self.gr2).grid(row=0, column=1, sticky=(E, W))
         self.at=Button(self.gr2, text="Aceptar").grid(pady=2, padx=2, row=0, column=2, sticky=(E, W))
         #Labels de la matriz del juego
-        self.ma00=Label(self.gr, text="0", bd=1, relief="raised").grid(pady=2, padx=2, row=0, column=0, sticky=(N, S, E, W))
-        self.ma01=Label(self.gr, text="64", bd=1, relief="sunken").grid(pady=2, padx=2, row=0, column=1, sticky=(N, S, E, W))
-        self.ma02=Label(self.gr, text="2", bd=1, relief="raised").grid(pady=2, padx=2, row=0, column=2, sticky=(N, S, E, W))
-        self.ma03=Label(self.gr, text="16", bd=1, relief="sunken").grid(pady=2, padx=2, row=0, column=3, sticky=(N, S, E, W))
-        self.ma10=Label(self.gr, text="0", bd=1, relief="raised").grid(pady=2, padx=2, row=1, column=0, sticky=(N, S, E, W))
-        self.ma11=Label(self.gr, text="8", bd=1, relief="sunken").grid(pady=2, padx=2, row=1, column=1, sticky=(N, S, E, W))
-        self.ma12=Label(self.gr, text="2", bd=1, relief="sunken").grid(pady=2, padx=2, row=1, column=2, sticky=(N, S, E, W))
-        self.ma13=Label(self.gr, text="4", bd=1, relief="raised").grid(pady=2, padx=2, row=1, column=3, sticky=(N, S, E, W))
-        self.ma20=Label(self.gr, text="0", bd=1, relief="sunken").grid(pady=2, padx=2, row=2, column=0, sticky=(N, S, E, W))
-        self.ma21=Label(self.gr, text="128", bd=1, relief="raised").grid(pady=2, padx=2, row=2, column=1, sticky=(N, S, E, W))
-        self.ma22=Label(self.gr, text="2", bd=1, relief="sunken").grid(pady=2, padx=2, row=2, column=2, sticky=(N, S, E, W))
-        self.ma23=Label(self.gr, text="256", bd=1, relief="raised").grid(pady=2, padx=2, row=2, column=3, sticky=(N, S, E, W))
-        self.ma30=Label(self.gr, text="0", bd=1, relief="sunken").grid(pady=2, padx=2, row=3, column=0, sticky=(N, S, E, W))
-        self.ma31=Label(self.gr, text="0", bd=1, relief="raised").grid(pady=2, padx=2, row=3, column=1, sticky=(N, S, E, W))
-        self.ma32=Label(self.gr, text="2", bd=1, relief="sunken").grid(pady=2, padx=2, row=3, column=2, sticky=(N, S, E, W))
-        self.ma33=Label(self.gr, text="8", bd=1, relief="raised").grid(pady=2, padx=2, row=3, column=3, sticky=(N, S, E, W))
+        self.ma00=Label(self.gr, text=x[0][0], bd=1, relief="raised").grid(pady=2, padx=2, row=0, column=0, sticky=(N, S, E, W))
+        self.ma01=Label(self.gr, text=x[0][1], bd=1, relief="sunken").grid(pady=2, padx=2, row=0, column=1, sticky=(N, S, E, W))
+        self.ma02=Label(self.gr, text=x[0][2], bd=1, relief="raised").grid(pady=2, padx=2, row=0, column=2, sticky=(N, S, E, W))
+        self.ma03=Label(self.gr, text=x[0][3], bd=1, relief="sunken").grid(pady=2, padx=2, row=0, column=3, sticky=(N, S, E, W))
+        self.ma10=Label(self.gr, text=x[1][0], bd=1, relief="raised").grid(pady=2, padx=2, row=1, column=0, sticky=(N, S, E, W))
+        self.ma11=Label(self.gr, text=x[1][1], bd=1, relief="sunken").grid(pady=2, padx=2, row=1, column=1, sticky=(N, S, E, W))
+        self.ma12=Label(self.gr, text=x[1][2], bd=1, relief="sunken").grid(pady=2, padx=2, row=1, column=2, sticky=(N, S, E, W))
+        self.ma13=Label(self.gr, text=x[1][3], bd=1, relief="raised").grid(pady=2, padx=2, row=1, column=3, sticky=(N, S, E, W))
+        self.ma20=Label(self.gr, text=x[2][0], bd=1, relief="sunken").grid(pady=2, padx=2, row=2, column=0, sticky=(N, S, E, W))
+        self.ma21=Label(self.gr, text=x[2][1], bd=1, relief="raised").grid(pady=2, padx=2, row=2, column=1, sticky=(N, S, E, W))
+        self.ma22=Label(self.gr, text=x[2][2], bd=1, relief="sunken").grid(pady=2, padx=2, row=2, column=2, sticky=(N, S, E, W))
+        self.ma23=Label(self.gr, text=x[2][3], bd=1, relief="raised").grid(pady=2, padx=2, row=2, column=3, sticky=(N, S, E, W))
+        self.ma30=Label(self.gr, text=x[3][0], bd=1, relief="sunken").grid(pady=2, padx=2, row=3, column=0, sticky=(N, S, E, W))
+        self.ma31=Label(self.gr, text=x[3][1], bd=1, relief="raised").grid(pady=2, padx=2, row=3, column=1, sticky=(N, S, E, W))
+        self.ma32=Label(self.gr, text=x[3][2], bd=1, relief="sunken").grid(pady=2, padx=2, row=3, column=2, sticky=(N, S, E, W))
+        self.ma33=Label(self.gr, text=x[3][3], bd=1, relief="raised").grid(pady=2, padx=2, row=3, column=3, sticky=(N, S, E, W))
 
         self.gr2.grid(column=1, row=0, padx=5, pady=5, sticky=(N, S, E, W))
         self.gr.grid(column=1, row=1, padx=5, pady=5, sticky=(N, S, E, W))
@@ -80,14 +83,48 @@ class Aplicacion():
         self.gr2.columnconfigure(2, weight=1)
 
         self.gr4.columnconfigure(3, weight=1)
+
+        #Espera que se presione alguna flecha para realizar el movimiento
+        master.bind("<Up>", self.funcUp)
+        master.bind("<Down>", self.funcDown)
+        master.bind("<Left>", self.funcLeft)
+        master.bind("<Right>", self.funcRight)
         
+    def funcUp(self, _event=None):
+        print("Up")
+    def funcDown(self, _event=None):
+        print("Down")
+    def funcLeft(self, _event=None):
+        print("Left")
+    def funcRight(self, _event=None):
+        print("Right")
 
+def gam():
+    x=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+    m=[0,1,2,3]
+    a=ran(m)
+    b=ran(m)
+    c=ran1(a,b,m)
+    x[a][b]=ran([2,2,2,2,4])
+    x[c[0]][c[1]]=ran([2,2,2,2,4])
+    return x
 
-        self.ve.mainloop()
+def ran(m):
+    y=random.choice(m)
+    return y
 
+def ran1(a,b,m):
+    a2=ran(m)
+    b2=ran(m)
+    if(a==a2 and b==b2):
+        return ran1(a,b,m)
+    else:
+        return [a2,b2]
         
 def main():
-    mi_app = Aplicacion()
+    ve = Tk()
+    mi_app = App(ve)
+    ve.mainloop()
     return 0
 
 if __name__ == '__main__':
