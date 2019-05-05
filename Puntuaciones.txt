@@ -1,21 +1,20 @@
-Records
-Jugador 1:
+Jugador
 0000
-Jugador 2:
+Jugador
 0000
-Jugador 3:
+Jugador
 0000
-Jugador 4:
+Jugador
 0000
-Jugador 5:
+Jugador
 0000
-Jugador 6:
+Jugador
 0000
-Jugador 7:
+Jugador
 0000
-Jugador 8:
+Jugador
 0000
-Jugador 9:
+Jugador
 0000
-Jugador 10:
+Jugador
 0000
