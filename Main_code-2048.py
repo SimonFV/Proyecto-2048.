@@ -4,24 +4,28 @@
 from tkinter import Tk
 from tkinter import *
 from tkinter import ttk, font
+from tkinter import messagebox
 import random
 import copy
 
+#Clase que encierra todos los elementos de la interfaz.
 class App():
     def __init__(self, master):
 
 
         self.r="sunken" #Bordes: "flat", "raised", "sunken", "ridge", "solid", "groove"
         self.c="gray40" #Color de las casillas de la matriz
+        
         self.run=0   #Determina en que estado esta la interfaz, que se puede hacer y que no
+        # 0:Selc_usuario, 1: Selc_base, 2:bin, 8:oct, 10:dec, 16:hexa, 
+        
         self.seg=1    #Segundos del cronometro
         self.min=5    #Segundos del cronometro
         self.puntos=0     #Puntuacion de la partida
-        self.m=[0,1,2,3]   #Lista para la funcion que toma valores aleatorios
         self.x=[]       #Matriz principal del juego
         self.ve = master     #Ventana principal
         
-        self.ve.geometry("520x460")
+        self.ve.geometry("560x480")
         self.ve.configure(bg = "gray40")
         self.ve.title("2048!!")
 
@@ -35,32 +39,36 @@ class App():
         self.gr2.grid(column=1, row=0, padx=5, pady=5, sticky=(N, S, E, W))
         self.gr3.grid(column=0, row=0, padx=5, pady=5, rowspan=2, sticky=(N, S, E, W))
         self.gr4.grid(column=0, row=2, padx=5, pady=5, columnspan=2, sticky=(N, S, E, W))
-
+        
         #Labels de la puntuacion
-        Label(self.gr4, text="Puntos: ").grid(pady=2, padx=2, row=0, column=2, sticky=(E))
+        Label(self.gr4, text="PUNTOS: ").grid(pady=2, padx=2, row=0, column=2, sticky=(E))
         self.points = Label(self.gr4, text=self.puntos)
         self.points.grid(pady=2, padx=2, row=0, column=3, sticky=(W))
         #Labels del tiempo
         Label(self.gr4, text="TIEMPO: ").grid(pady=2, padx=2, row=0, column=4, sticky=(E))
-        self.tiempo=Label(self.gr4, text="0:0")
+        self.tiempo=Label(self.gr4, text="0:00")
         self.tiempo.grid(pady=2, padx=2, row=0, column=5, sticky=(W))
         #Label de informacion
         self.info=Label(self.gr4, text="INGRESE UN NOMBRE DE JUGADOR PARA INICIAR")
         self.info.grid(pady=2, padx=2, row=1, column=2, columnspan=4, sticky=(E))
 
         #Botones para escojer el modo de juego
-        Button(self.gr4, text="BINARIO").grid(pady=2, padx=2, row=0, column=0, sticky=(E, W))
-        Button(self.gr4, text="OCTAL").grid(pady=2, padx=2, row=1, column=0, sticky=(E, W))
-        Button(self.gr4, text="DECIMAL").grid(pady=2, padx=2, row=0, column=1, sticky=(E, W))
-        Button(self.gr4, text="HEXADECIMAL").grid(pady=2, padx=2, row=1, column=1, sticky=(E, W))
-
+        self.bi=Button(self.gr4, command=lambda : self.base(2), text="BINARIO",bg="gray60")
+        self.bi.grid(pady=2, padx=2, row=0, column=0, sticky=(E, W))
+        self.oc=Button(self.gr4, command=lambda : self.base(8), text="OCTAL",bg="gray60")
+        self.oc.grid(pady=2, padx=2, row=1, column=0, sticky=(E, W))
+        self.de=Button(self.gr4, command=lambda : self.base(10), text="DECIMAL",bg="gray60")
+        self.de.grid(pady=2, padx=2, row=0, column=1, sticky=(E, W))
+        self.he=Button(self.gr4, command=lambda : self.base(16), text="HEXADECIMAL",bg="gray60")
+        self.he.grid(pady=2, padx=2, row=1, column=1, sticky=(E, W))
+        
         #Labels de la tabla de puntuaciones
-        score=open("Puntuaciones.txt", "r")
-        self.sc=score.readlines()
-        self.run=Label(self.gr3, text="RECORDS").grid(pady=2, padx=2, row=0, column=0, sticky=(N, S, E, W))
-        self.tabla(1)
-        score.close()
-
+        self.score=open("Puntuaciones.txt", "r")
+        self.sc=self.score.readlines()
+        self.records=Label(self.gr3, text="RECORDS").grid(pady=2, padx=2, row=0, column=0, sticky=(N, S, E, W))
+        self.tabla(0)
+        self.score.close()
+        
         #Labels de la matriz inicial
         self.ma00=Label(self.gr, text="0", bd=2, relief=self.r, bg = self.c)
         self.ma00.grid(pady=4, padx=4, row=0, column=0, sticky=(N, S, E, W))
@@ -94,11 +102,12 @@ class App():
         self.ma32.grid(pady=4, padx=4, row=3, column=2, sticky=(N, S, E, W))
         self.ma33=Label(self.gr, text="0", bd=2, relief=self.r, bg = self.c)
         self.ma33.grid(pady=4, padx=4, row=3, column=3, sticky=(N, S, E, W))
-
+        
         #Ingresar el usuario
-
+        Label(self.gr2, text="USUARIO: ").grid(pady=5, padx=5, row=0, column=0, sticky=(E, W))
         self.entry=Entry(self.gr2)
         self.entry.grid(row=0, column=1, sticky=(E, W))
+        
         self.user()
 
         #Asignar el reajuste automatico a la ventana
@@ -134,38 +143,39 @@ class App():
     
     #Metodo que construye los Labels de la matriz del juego
     def construir(self):
+        b=self.run
         self.forma(0,0)
-        self.ma00.configure(text=self.x[0][0], relief=self.r, bg = self.c)
+        self.ma00.configure(text=conv(self.x[0][0],b), relief=self.r, bg = self.c)
         self.forma(0,1)
-        self.ma01.configure(text=self.x[0][1], relief=self.r, bg = self.c)
+        self.ma01.configure(text=conv(self.x[0][1],b), relief=self.r, bg = self.c)
         self.forma(0,2)
-        self.ma02.configure(text=self.x[0][2], relief=self.r, bg = self.c)
+        self.ma02.configure(text=conv(self.x[0][2],b), relief=self.r, bg = self.c)
         self.forma(0,3)
-        self.ma03.configure(text=self.x[0][3], relief=self.r, bg = self.c)
+        self.ma03.configure(text=conv(self.x[0][3],b), relief=self.r, bg = self.c)
         self.forma(1,0)
-        self.ma10.configure(text=self.x[1][0], relief=self.r, bg = self.c)
+        self.ma10.configure(text=conv(self.x[1][0],b), relief=self.r, bg = self.c)
         self.forma(1,1)
-        self.ma11.configure(text=self.x[1][1], relief=self.r, bg = self.c)
+        self.ma11.configure(text=conv(self.x[1][1],b), relief=self.r, bg = self.c)
         self.forma(1,2)
-        self.ma12.configure(text=self.x[1][2], relief=self.r, bg = self.c)
+        self.ma12.configure(text=conv(self.x[1][2],b), relief=self.r, bg = self.c)
         self.forma(1,3)
-        self.ma13.configure(text=self.x[1][3], relief=self.r, bg = self.c)
+        self.ma13.configure(text=conv(self.x[1][3],b), relief=self.r, bg = self.c)
         self.forma(2,0)
-        self.ma20.configure(text=self.x[2][0], relief=self.r, bg = self.c)
+        self.ma20.configure(text=conv(self.x[2][0],b), relief=self.r, bg = self.c)
         self.forma(2,1)
-        self.ma21.configure(text=self.x[2][1], relief=self.r, bg = self.c)
+        self.ma21.configure(text=conv(self.x[2][1],b), relief=self.r, bg = self.c)
         self.forma(2,2)
-        self.ma22.configure(text=self.x[2][2], relief=self.r, bg = self.c)
+        self.ma22.configure(text=conv(self.x[2][2],b), relief=self.r, bg = self.c)
         self.forma(2,3)
-        self.ma23.configure(text=self.x[2][3], relief=self.r, bg = self.c)
+        self.ma23.configure(text=conv(self.x[2][3],b), relief=self.r, bg = self.c)
         self.forma(3,0)
-        self.ma30.configure(text=self.x[3][0], relief=self.r, bg = self.c)
+        self.ma30.configure(text=conv(self.x[3][0],b), relief=self.r, bg = self.c)
         self.forma(3,1)
-        self.ma31.configure(text=self.x[3][1], relief=self.r, bg = self.c)
+        self.ma31.configure(text=conv(self.x[3][1],b), relief=self.r, bg = self.c)
         self.forma(3,2)
-        self.ma32.configure(text=self.x[3][2], relief=self.r, bg = self.c)
+        self.ma32.configure(text=conv(self.x[3][2],b), relief=self.r, bg = self.c)
         self.forma(3,3)
-        self.ma33.configure(text=self.x[3][3], relief=self.r, bg = self.c)
+        self.ma33.configure(text=conv(self.x[3][3],b), relief=self.r, bg = self.c)
         
 
     #Da forma y color a las casillas de la matriz
@@ -202,88 +212,207 @@ class App():
             self.c="deeppink"
         else:
             self.c="reed"
-        
-            
+
+    #Metodo que escoge la base para jugar
+    def base(self,b):
+        if(self.run==1):
+            #Inicia el cronometro
+            self.crono()
+        if(self.run!=0):
+            if(b==2):
+                self.run=2
+                self.bi.configure(bg="yellow")
+                self.oc.configure(bg="gray60")
+                self.de.configure(bg="gray60")
+                self.he.configure(bg="gray60")
+            elif(b==8):
+                self.run=8
+                self.bi.configure(bg="gray60")
+                self.oc.configure(bg="blue")
+                self.de.configure(bg="gray60")
+                self.he.configure(bg="gray60")
+            elif(b==10):
+                self.run=10
+                self.bi.configure(bg="gray60")
+                self.oc.configure(bg="gray60")
+                self.de.configure(bg="lawngreen")
+                self.he.configure(bg="gray60")
+            elif(b==16):
+                self.run=16
+                self.bi.configure(bg="gray60")
+                self.oc.configure(bg="gray60")
+                self.de.configure(bg="gray60")
+                self.he.configure(bg="red")
+            self.info.configure(text="MUEVA LAS CASILLAS CON LAS FLECHAS")
+            #Construye los Labels de la matriz del juego
+            self.construir()
+     
     #Metodo que ejecuta la funcion indicada segun el movimiento recibido del teclado
     def funcMove(self,event):
-        if(event.keysym=="Up"): 
-            if(self.run==1):
+        if(self.run==2 or self.run==8 or self.run==10 or self.run==16):
+            if(event.keysym=="Up"): 
                 z=copy.deepcopy(self.x)
                 d = copy.deepcopy(suma(self.x,0,0,1,0,1,0,2,0,0,0))
-        elif(event.keysym=="Down"):
-            if(self.run==1):
+            elif(event.keysym=="Down"):
                 z=copy.deepcopy(self.x)
                 d = copy.deepcopy(suma(self.x,3,0,-1,0,1,0,1,0,0,0))
-        elif(event.keysym=="Left"):
-            if(self.run==1):
+            elif(event.keysym=="Left"):
                 z=copy.deepcopy(self.x)
-                d = copy.deepcopy(suma(self.x,0,0,0,1,0,1,2,1,0,0))
-        elif(event.keysym=="Right"):
-            if(self.run==1):
+                d = copy.deepcopy(suma(self.x,0,0,0,1,0,1,2,0,0,0))
+            elif(event.keysym=="Right"):
                 z=copy.deepcopy(self.x)
-                d = copy.deepcopy(suma(self.x,0,3,0,-1,0,1,1,1,0,0))  
-        self.x = d[0]
-        self.puntos = self.puntos + d[1]
-        p=copy.deepcopy(ran2(self.x))
-        if(self.x!=z):
-            if(p!=0):
-                self.x[p[0]][p[1]]=ran([2,2,2,2,2,4])
-                self.construir()
-                self.points.configure(text=self.puntos)
-            if(gameover(self.x,0,0,0)==False):
-                self.run==0
-                self.info.configure(text="PERDISTE: NO HAY MAS MOVIMIENTOS")
-            
-   
+                d = copy.deepcopy(suma(self.x,0,3,0,-1,0,1,1,0,0,0))  
+            self.x = d[0]
+            self.puntos = self.puntos + d[1]
+            p=copy.deepcopy(ran2(self.x))
+            if(self.x!=z):
+                if(d[2]==2048):
+                    self.info.configure(text="¡LO HAS CONSEGUIDO, FELICIDADES!")
+                if(p!=0):
+                    self.x[p[0]][p[1]]=ran([2,2,2,2,2,4])
+                    self.construir()
+                    self.points.configure(text=self.puntos)
+                if(gameover(self.x,0,0,0)==False):
+                    self.run=0
+                    self.info.configure(text="NO HAY MAS MOVIMIENTOS")
+                    self.save_text()
+                    self.seg=1
+                    self.min=5
+                    self.puntos=0
 
     #Metodo que crea la tabla de records
     def tabla(self,b):
-        if(b<20):
-            Label(self.gr3, text=self.sc[b][:-1]).grid(pady=2, padx=2, row=b, column=0, sticky=(N, S, E, W))
-            Label(self.gr3, text=self.sc[b+1][:-1], bd=2, relief="ridge").grid(pady=2, padx=2, row=b, column=1, sticky=(N, S, E, W))
+        if(b<19):
+            Label(self.gr3, text=self.sc[b][:-1]).grid(pady=2, padx=2, row=b+1, column=0, sticky=(N, S, E, W))
+            Label(self.gr3, text=self.sc[b+1][:-1], bd=2, relief="ridge").grid(pady=2, padx=2, row=b+1, column=1, sticky=(N, S, E, W))
             self.tabla(b+2)
 
     #Metodo que guarda el usuario
     def user(self):
-        Label(self.gr2, text="Usuario: ").grid(pady=5, padx=5, row=0, column=0, sticky=(E, W))
-        self.entry.configure(state="normal")
-        Button(self.gr2, command=self.user_play, text="Aceptar").grid(pady=2, padx=2, row=0, column=2, sticky=(E, W))
+        if(self.run==0 or self.run==1):
+            self.info.configure(text="INGRESE UN NOMBRE DE JUGADOR PARA INICIAR")
+            self.entry.configure(state="normal")
+            Button(self.gr2, command=self.user_get, text="ACEPTAR").grid(pady=2, padx=2, row=0, column=2, sticky=(E, W))
+        else:
+            MsgBox = messagebox.askquestion ('Cambiar Usuario','Si cambia de usuario terminara la partida actual.',icon = 'warning')
+            if(MsgBox=='yes'):
+                self.save_text()
+                self.puntos=0
+                self.seg=1
+                self.min=5
+                self.run=0
+                self.user()
         
     #Metodo que guarda el usuario e inicia el juego
-    def user_play(self):
-        #Se crea la matriz con los valores aleatorios iniciales
-        self.x=gam()
-        #Construye los Labels de la matriz del juego
-        self.construir()
-        #Permite que se detecten las flechas
-        self.run=1
+    def user_get(self):
         #Reccoje el nombre ingresado
         self.name=self.entry.get()
-        self.cambiar_user()
-        
-        #Inicia el cronometro
-        self.crono()
+        if(self.name!=""):
+            #Se crea la matriz con los valores aleatorios iniciales
+            self.x=gam()
+            self.run=1
+            self.cambiar_user()
         
     #Metodo que permite cambiar el usuario
     def cambiar_user(self):
-        Label(self.gr2, text="Usuario: ").grid(pady=5, padx=5, row=0, column=0, sticky=(E, W))
+        Label(self.gr2, text="USUARIO: ").grid(pady=5, padx=5, row=0, column=0, sticky=(E, W))
         self.entry.configure(state="readonly")
-        Button(self.gr2, command=self.user, text="Cambiar").grid(pady=2, padx=2, row=0, column=2, sticky=(E, W))
-        print(self.name)
+        Button(self.gr2, command=self.user, text="CAMBIAR").grid(pady=2, padx=2, row=0, column=2, sticky=(E, W))
+        self.points.configure(text=self.puntos)
+        self.tiempo.configure(text="0:00")
+        self.info.configure(text="ESCOJA UNA BASE")
 
     #Metodo que presenta el cronometro
     def crono(self):
-        if(self.min>0):
-            if(self.seg>0):
-                self.seg=self.seg-1
-                self.tiempo.configure(text=str(self.min)+":"+str(self.seg))
-                self.tiempo.after(1000, self.crono)
+        if(self.run!=0):
+            if(self.min!=0 or self.seg!=0):
+                if(self.seg>0):
+                    self.seg=self.seg-1
+                    if(self.seg<10):
+                        self.tiempo.configure(text=str(self.min)+":0"+str(self.seg))
+                    else:
+                        self.tiempo.configure(text=str(self.min)+":"+str(self.seg))
+                    self.tiempo.after(1000, self.crono)
+                else:
+                    self.seg=59
+                    self.min=self.min-1
+                    self.tiempo.configure(text=str(self.min)+":"+str(self.seg))
+                    self.tiempo.after(1000, self.crono)
             else:
-                self.seg=59
-                self.min=self.min-1
-                self.tiempo.configure(text=str(self.min)+":"+str(self.seg))
-                self.tiempo.after(1000, self.crono)
-        
+                self.save_text()
+                self.puntos=0
+                self.seg=1
+                self.min=5
+                self.run=0
+                self.info.configure(text="SE ACABO EL TIEMPO")
+                
+    #Metodo que guarda la puntuacion final en la tabla
+    def save_text(self):
+        self.score=open("Puntuaciones.txt", "w")
+        self.score.write("")
+        self.score.close()
+        self.score=open("Puntuaciones.txt", "a")
+        m=self.name_repet(0,21)
+        if(m==21):
+            self.comp_name(0)
+        else:
+            self.posic_name(m)
+        self.escr_name(0)
+        self.score.close()
+        self.score=open("Puntuaciones.txt", "r")
+        self.sc=self.score.readlines()
+        self.tabla(0)
+        self.score.close()
+    #Pregunta si el nombre ya esta en la lista
+    def name_repet(self,b,m):
+        if(b<19):
+            if(self.sc[b][:-1]==self.name):
+                m=b
+            else:
+                return self.name_repet(b+2,m)
+        return m
+    #Si el usuario existe, lo reposiciona
+    def posic_name(self,b):
+        if(int(self.sc[b+1][:-1])<=self.puntos):
+            if(b!=0):
+                if(self.puntos>int(self.sc[b-1][:-1])):
+                    self.sc[b]=self.sc[b-2]
+                    self.sc[b+1]=self.sc[b-1]
+                    self.sc[b-2]=str(self.name)+'\n'
+                    self.sc[b-1]=str(self.puntos)+'\n'
+                    self.posic_name(b-2)
+                else:
+                    self.sc[b]=str(self.name)+'\n'
+                    self.sc[b+1]=str(self.puntos)+'\n'
+            else:
+                self.sc[b]=str(self.name)+'\n'
+                self.sc[b+1]=str(self.puntos)+'\n'
+    #Si el usuario no existe, lo ingresa en la posicion correcta
+    def comp_name(self,b):
+        if(b<19):
+            if(int(self.sc[b+1][:-1])<self.puntos):
+                self.mover_name(18,b)
+                self.sc[b]=str(self.name)+'\n'
+                self.sc[b+1]=str(self.puntos)+'\n'
+            else:
+                self.comp_name(b+2)
+    #Reacomoda las casillas siguientes a la ingresada         
+    def mover_name(self,b,m):
+        if(b>m):
+            self.sc[b]=self.sc[b-2]
+            self.sc[b+1]=self.sc[b-1]
+            self.mover_name(b-2,m)
+    #Escribe los datos de la tabla en el texto
+    def escr_name(self,b):
+        if(b<19):
+            self.score.write(self.sc[b])
+            self.score.write(self.sc[b+1])
+            self.escr_name(b+2)
+            
+            
+######PARTE LOGICA DE LA MATRIZ DEL JUEGO########
+
+#Crea la matriz inicial del juego con los dos valores aleatorios.      
 def gam():
     x=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
     m=[0,1,2,3]
@@ -331,44 +460,46 @@ def zero(x,i,j,c):
     return c
 
 #Funcion encargada de mover y sumar las casillas, y la puntuacion
-#h=puntuacion
-#Up: x, i=0, j=0, a=1, b=0, c=1, d=0, p=2, y=0, z=0
-#Down: x, i=3, j=0, a=-1, b=0, c=1, d=0, p=1, y=0, z=0
-#Left: x, i=0, j=0, a=0, b=1, c=0, d=1, p=2, y=1, z=0 
-#Right: x, i=0, j=3, a=0, b=-1, c=0, d=1, p=1, y=1, z=0
-def suma(x,i,j,a,b,c,d,p,y,z,h):
+#x=matriz, h=puntuacion, g=condicion: gana el juego
+#Up: x, i=0, j=0, a=1, b=0, c=1, d=0, p=2, z=0, h=0, g=0
+#Down: x, i=3, j=0, a=-1, b=0, c=1, d=0, p=1, z=0, h=0, g=0
+#Left: x, i=0, j=0, a=0, b=1, c=0, d=1, p=2, z=0, h=0, g=0
+#Right: x, i=0, j=3, a=0, b=-1, c=0, d=1, p=1, z=0, h=0, g=0
+def suma(x,i,j,a,b,c,d,p,z,h,g):
     if(3>=j and 3>=i):
         if(x[i][j]==0 and z!=2):
             x[i][j]=x[i+a][j+b]
             x[i+a][j+b]=0
-            return suma(x,i+d,j+c,a,b,c,d,p,y,z,h)
+            return suma(x,i+d,j+c,a,b,c,d,p,z,h,g)
         elif(x[i][j]==x[i+a][j+b] and z==2):
             h=h+x[i][j]+x[i][j]
             x[i][j]=x[i][j]+x[i][j]
+            if(x[i][j]==2048):
+                g=2048
             x[i+a][j+b]=0
-            return suma(x,i+d,j+c,a,b,c,d,p,y,z,h)
+            return suma(x,i+d,j+c,a,b,c,d,p,z,h,g)
         else:
-            return suma(x,i+d,j+c,a,b,c,d,p,y,z,h)
-    elif(y==0):
+            return suma(x,i+d,j+c,a,b,c,d,p,z,h,g)
+    elif(d==0):
         if(p!=i):
-            return suma(x,i+a,0,a,b,c,d,p,y,z,h)
+            return suma(x,i+a,0,a,b,c,d,p,z,h,g)
         elif(z<3):
             if(p==2):
-                return suma(x,0,0,a,b,c,d,p,y,z+1,h)
+                return suma(x,0,0,a,b,c,d,p,z+1,h,g)
             else:
-                return suma(x,3,0,a,b,c,d,p,y,z+1,h)
+                return suma(x,3,0,a,b,c,d,p,z+1,h,g)
         else:
-            return [x,h]
+            return [x,h,g]
     else:
         if(p!=j):
-            return suma(x,0,j+b,a,b,c,d,p,y,z,h)
+            return suma(x,0,j+b,a,b,c,d,p,z,h,g)
         elif(z<3):
             if(p==2):
-                return suma(x,0,0,a,b,c,d,p,y,z+1,h)
+                return suma(x,0,0,a,b,c,d,p,z+1,h,g)
             else:
-                return suma(x,0,3,a,b,c,d,p,y,z+1,h)
+                return suma(x,0,3,a,b,c,d,p,z+1,h,g)
         else:
-            return [x,h]
+            return [x,h,g]
                 
 #Funcion que determina si todavia quedan movimientos
 def gameover(x,i,j,z):
@@ -398,35 +529,25 @@ def gameover(x,i,j,z):
             return gameover(x,0,0,z+1)
     else:
         return False
-        
-
-def main():
-    ve = Tk()
-    game = App(ve)
-    
-    return 0
-
-if __name__ == '__main__':
-    main()
 
 #Funcion que convierte de decimal a base binaria, octal o hexadecimal     
 # x=int, b=base(2,8,16)
-def dec_hex(x,b):
+def conv(x,b):
     if(x>b-1):
         if(x%b==10):
-            return dec_hex(x//b,b) + "A"
+            return conv(x//b,b) + "A"
         elif(x%b==11):
-            return dec_hex(x//b,b) + "B"
+            return conv(x//b,b) + "B"
         elif(x%b==12):
-            return dec_hex(x//b,b) + "C"
+            return conv(x//b,b) + "C"
         elif(x%b==13):
-            return dec_hex(x//b,b) + "D"
+            return conv(x//b,b) + "D"
         elif(x%b==14):
-            return dec_hex(x//b,b) + "E"
+            return conv(x//b,b) + "E"
         elif(x%b==15):
-            return dec_hex(x//b,b) + "F"
+            return conv(x//b,b) + "F"
         else:
-            return dec_hex(x//b,b) + str(x%b)
+            return conv(x//b,b) + str(x%b)
     else:
         if(x%b==10):
             return "A"
@@ -442,4 +563,13 @@ def dec_hex(x,b):
             return "F"
         else:
             return str(x%b)
-        
+     
+
+def main():
+    ve = Tk()
+    game = App(ve)
+    
+    return 0
+
+if __name__ == '__main__':
+    main()
